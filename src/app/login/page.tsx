@@ -1,8 +1,19 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Login() {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+
+  const handleSubmit = () => {
+    
+  }
+
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4 sm:px-6">
       <div className="w-full max-w-md space-y-8">
@@ -14,7 +25,7 @@ export default function Login() {
         </div>
 
         {/* Form */}
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email */}
           <div className="flex flex-col space-y-2">
             <label
