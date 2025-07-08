@@ -5,20 +5,73 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { axiosInstance } from "@/lib/axios";
+import { useUserStore } from "@/lib/store";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import { ChevronDownIcon } from "lucide-react";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function AddTask() {
+  const router = useRouter();
+  const user = useUserStore((state) => state.user);
+
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [deadlineDate, setDeadlineDate] = React.useState<Date | undefined>(undefined);
   const [reminderDate, setReminderDate] = React.useState<Date | undefined>(
     undefined
   );
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadlineTime, setDeadlineTime] = useState("");
+  const [reminderAtTime, setReminderAtTime] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const deadline = new Date(
+      deadlineDate!.getFullYear(),
+      deadlineDate!.getMonth(),
+      deadlineDate!.getDate(),
+      parseInt(deadlineTime.split(":")[0]),
+      parseInt(deadlineTime.split(":")[1]),
+      parseInt(deadlineTime.split(":")[2] ?? "0")
+    ).toISOString();
+
+    const reminderAt = reminderDate
+      ? new Date(
+          reminderDate.getFullYear(),
+          reminderDate.getMonth(),
+          reminderDate.getDate(),
+          parseInt(reminderAtTime.split(":")[0]),
+          parseInt(reminderAtTime.split(":")[1]),
+          parseInt(reminderAtTime.split(":")[2] ?? "0")
+        ).toISOString()
+      : undefined;
+
+    try {
+      const response = await axiosInstance.post("/tasks", {
+        title,
+        description,
+        deadline,
+        reminderAt,
+        userId: user?.id
+      });
+
+      if(response.data?.success){
+       toast.success("Task add successfully");
+       router.push("/dashboard");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  }
 
   return (
     <>
@@ -32,7 +85,7 @@ export default function AddTask() {
         </div>
 
         <div className="w-full max-w-md bg-white p-6 rounded-xl shadow">
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* Title */}
             <div className="mb-5">
               <label
@@ -41,7 +94,14 @@ export default function AddTask() {
               >
                 Title
               </label>
-              <Input id="title" type="text" placeholder="Your task" required />
+              <Input
+                id="title"
+                type="text"
+                placeholder="Your task"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
 
             {/* Description */}
@@ -56,6 +116,8 @@ export default function AddTask() {
                 id="description"
                 placeholder="Type your description here."
                 required
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
 
@@ -76,17 +138,19 @@ export default function AddTask() {
                         id="deadline-date"
                         className="w-full justify-between font-normal"
                       >
-                        {date ? date.toLocaleDateString() : "Select date"}
+                        {deadlineDate
+                          ? deadlineDate.toLocaleDateString()
+                          : "Select date"}
                         <ChevronDownIcon className="ml-2 h-4 w-4" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={date}
+                        selected={deadlineDate}
                         captionLayout="dropdown"
                         onSelect={(date) => {
-                          setDate(date);
+                          setDeadlineDate(date);
                           setOpen(false);
                         }}
                       />
@@ -98,7 +162,14 @@ export default function AddTask() {
                   <label htmlFor="deadline-time" className="block mb-1 text-sm">
                     Time
                   </label>
-                  <Input type="time" id="deadline-time" step="1" required />
+                  <Input
+                    type="time"
+                    id="deadline-time"
+                    step="1"
+                    required
+                    value={deadlineTime}
+                    onChange={(e) => setDeadlineTime(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -142,13 +213,19 @@ export default function AddTask() {
                   <label htmlFor="reminder-time" className="block mb-1 text-sm">
                     Time
                   </label>
-                  <Input type="time" id="reminder-time" step="1" />
+                  <Input
+                    type="time"
+                    id="reminder-time"
+                    step="1"
+                    value={reminderAtTime}
+                    onChange={(e) => setReminderAtTime(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full mt-6">
+            <Button type="submit" className="w-full mt-6 cursor-pointer">
               Add Task
             </Button>
           </form>

@@ -16,12 +16,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { Status } from "../../lib/generated/prisma";
+
+type Task = {
+  title: string;
+  deadline: Date;
+  description: string;
+  reminderAt: Date;
+  reminderSent: boolean;
+  status: Status;
+  userId: string;
+};
+
 
 type TaskCardProps = {
   index: number;
+  task: Task
 };
 
-export default function TaskCard({ index }: TaskCardProps) {
+export default function TaskCard({ task, index }: TaskCardProps) {
+  console.log(task);
   return (
     <div
       key={index}
@@ -32,10 +46,10 @@ export default function TaskCard({ index }: TaskCardProps) {
       {/* Main Card Content */}
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold text-lg text-gray-800">Exercise</h3>
-          <p className="text-sm text-gray-500">Carry out a yoga session</p>
+          <h3 className="font-semibold text-lg text-gray-800">{task.title}</h3>
+          <p className="text-sm text-gray-500">{task.description}</p>
         </div>
-        <Link href="/edit-task/1">
+        <Link href={`edit-task/${task.id}`}>
           <Pencil className="w-5 h-5 text-gray-500 hover:text-gray-700 cursor-pointer" />
         </Link>
       </div>

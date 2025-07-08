@@ -36,7 +36,7 @@ model Task {
   deadline     DateTime
   reminderAt   DateTime?
   reminderSent Boolean  @default(false)
-  status       Status
+  status       Status   @default(PENDING)
   userId       String
   user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())

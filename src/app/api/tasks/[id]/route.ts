@@ -12,41 +12,35 @@ type Task = {
   userId: string;
 };
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, {params}: {params: {id: string}}) {
   try {
-    const user = await prisma.user.findFirst({
-        where: {
-            id: params.id
-        }
+    const task = await prisma.task.findUnique({
+      where: {id: params.id}
     });
 
-    if (!user) {
+    if(!task){
       return NextResponse.json({
         success: false,
-        message: "user not found",
+        message: "Task not found",
       });
     }
 
-    const userTasks = await prisma.task.findMany({
-      where: {
-        userId: params.id,
-      },
-    });
-
-
-    return NextResponse.json({ success: true, data: userTasks });
+    return NextResponse.json({
+      success: true,
+      data: task,
+    })
   } catch (error) {
     console.log(error);
     return NextResponse.json({
       success: false,
-      message: "Failed to get user task",
+      message: "task is not found!",
+      error: error.message,
     });
   }
 }
 
+
+// edit task by task id
 export async function PUT(req: Request, {params}: {params: {id:string}}){
     try {
         const body:Task =await req.json();
@@ -96,6 +90,7 @@ export async function PUT(req: Request, {params}: {params: {id:string}}){
     }
 }
 
+// delete task by task id
 export async function DELETE(req: Request, {params}: {params: {id: string}}){
     try {
         await prisma.task.delete({

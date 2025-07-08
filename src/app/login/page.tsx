@@ -2,16 +2,41 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { axiosInstance } from "@/lib/axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from 'react-toastify';
 
 export default function Login() {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const router = useRouter();
 
-  const handleSubmit = () => {
-    
-  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await axiosInstance.post("/users/auth/login", {
+        email,
+        password,
+      });
+
+      console.log(response);
+
+      if (response.data.success) {
+        toast.success("Login success");
+        localStorage.setItem("token", response.data.token);
+        router.push("/dashboard", response.data);
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast.error("Something went wrong during login");
+    }
+  };
 
 
   return (
@@ -37,6 +62,8 @@ export default function Login() {
             <Input
               id="email"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="youremail@email.com"
               className="py-5 px-4 rounded-xl shadow transition duration-300 ease-in-out hover:-translate-y-0.5"
             />
@@ -53,6 +80,8 @@ export default function Login() {
             <Input
               id="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
               className="py-5 px-4 rounded-xl shadow transition duration-300 ease-in-out hover:-translate-y-0.5"
             />
@@ -61,7 +90,7 @@ export default function Login() {
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full py-5 text-lg rounded-xl bg-green-500 text-white hover:bg-green-600 transition hover:-translate-y-0.5"
+            className="cursor-pointer w-full py-5 text-lg rounded-xl bg-green-500 text-white hover:bg-green-600 transition hover:-translate-y-0.5"
           >
             Login
           </Button>

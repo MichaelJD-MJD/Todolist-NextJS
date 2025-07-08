@@ -18,28 +18,27 @@ export async function POST(req: Request) {
 
     const isValid = await bcrypt.compare(password, user?.password);
 
-    const token = generateToken(user.id);
-
     if (isValid) {
-        const response = NextResponse.json({
-          success: true,
-          data: {
-            id: user.id,
-            nama: user.nama,
-            email: user.email,
-            profile_pic: user.profile_pic,
-          },
-          token
-        });
+      const token = generateToken(user.id);
+      const response = NextResponse.json({
+        success: true,
+        data: {
+          id: user.id,
+          nama: user.nama,
+          email: user.email,
+          profile_pic: user.profile_pic,
+        },
+        token,
+      });
 
-        response.cookies.set("jwt", token, {
-          maxAge: 7 * 24 * 60 * 60, // dalam detik, bukan ms
-          httpOnly: true,
-          sameSite: "strict",
-          secure: process.env.NODE_ENV !== "development",
-        });
+      response.cookies.set("jwt", token, {
+        maxAge: 7 * 24 * 60 * 60, // dalam detik, bukan ms
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV !== "development",
+      });
 
-       return response;
+      return response;
     }
 
     return NextResponse.json({
