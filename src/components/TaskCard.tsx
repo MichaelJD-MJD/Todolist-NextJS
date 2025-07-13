@@ -17,8 +17,12 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { Status } from "../../lib/generated/prisma";
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 type Task = {
+  id: string;
   title: string;
   deadline: Date;
   description: string;
@@ -28,14 +32,84 @@ type Task = {
   userId: string;
 };
 
-
 type TaskCardProps = {
   index: number;
-  task: Task
+  task: Task;
 };
 
 export default function TaskCard({ task, index }: TaskCardProps) {
   console.log(task);
+
+  const [isDialogEditOpen, setIsDialogEditOpen] = useState(false);
+
+  const [status, setStatus] = useState(task.status);
+  const [checked, setChecked] = useState(task.status == "COMPLETE" ? true : false);
+
+  const handleMarkComplete = async (isChecked: boolean) => {
+    try {
+      const response = await axiosInstance.patch(`/tasks/${task.id}`, {
+        status: isChecked ? "COMPLETE" : "PENDING",
+      });
+      console.log(response);
+      if (response.data.success) {
+        toast.success("Task Status Updated");
+        if(response.data.data.status == "COMPLETE"){
+          setChecked(true);
+        }else{
+          setChecked(false);
+        }
+      } else {
+        toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditClick = async () => {
+    setIsDialogEditOpen(true);
+    try {
+      const response = await axiosInstance.get(`tasks/${task.id}`);
+      console.log(response);
+      if (response?.data?.success) {
+        setStatus(response.data.data.status);
+        if (response.data.data.status == "COMPLETE") {
+          setChecked(true);
+        } else {
+          setChecked(false);
+        }
+      }
+    } catch (error) {
+      console.log("Fetch Status Error: ", error);
+      toast.error("Something went wrong!");
+    }
+  };
+
+  const handleSubmitEditStatus = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    console.log({ status });
+
+    const response = await axiosInstance.patch(`/tasks/${task.id}`, {
+      status,
+    });
+    console.log(response);
+    if (response.data.success) {
+      toast.success("Task Status Updated");
+      setIsDialogEditOpen(false);
+      setStatus(status);
+      if (response.data.data.status == "COMPLETE") {
+        setChecked(true);
+      } else {
+        setChecked(false);
+      }
+    } else {
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <div
       key={index}
@@ -58,9 +132,12 @@ export default function TaskCard({ task, index }: TaskCardProps) {
         {/* Action buttons */}
         <div className="flex gap-4 text-sm">
           {/* Edit Dialog */}
-          <Dialog>
+          <Dialog open={isDialogEditOpen} onOpenChange={setIsDialogEditOpen}>
             <DialogTrigger asChild>
-              <button className="text-yellow-500 hover:underline cursor-pointer">
+              <button
+                onClick={() => handleEditClick()}
+                className="text-yellow-500 hover:underline cursor-pointer"
+              >
                 Edit
               </button>
             </DialogTrigger>
@@ -68,10 +145,17 @@ export default function TaskCard({ task, index }: TaskCardProps) {
               <DialogHeader>
                 <DialogTitle>Edit Status?</DialogTitle>
               </DialogHeader>
-              <form className="flex flex-col gap-4 mt-4">
-                <Select required>
+              <form
+                onSubmit={handleSubmitEditStatus}
+                className="flex flex-col gap-4 mt-4"
+              >
+                <Select
+                  value={status || task.status}
+                  required
+                  onValueChange={(value) => setStatus(value)}
+                >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose one" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="border border-gray-300 rounded px-3 py-2 text-sm">
                     <SelectItem value="PENDING">Pending</SelectItem>
@@ -120,6 +204,8 @@ export default function TaskCard({ task, index }: TaskCardProps) {
             type="checkbox"
             id={`task-${index}`}
             className="w-4 h-4 cursor-pointer"
+            checked={checked}
+            onChange={(e) => handleMarkComplete(e.target.checked)}
           />
         </div>
       </div>

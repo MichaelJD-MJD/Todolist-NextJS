@@ -90,6 +90,39 @@ export async function PUT(req: Request, {params}: {params: {id:string}}){
     }
 }
 
+// edit status task by task id
+export async function PATCH(req: Request, {params} : {params: {id: string}}){
+  try {
+    const {status}: {status: Status} = await req.json();
+
+    if (!status) {
+      return NextResponse.json({
+        success: false,
+        message: "Status is required",
+      });
+    }
+
+    const task = await prisma.task.update({
+      where: {id: params.id},
+      data: {status},
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Task status updated",
+      data: task,
+    });
+
+  } catch (error) {
+    console.error("PATCH status error:", error);
+    return NextResponse.json({
+      success: false,
+      message: "Failed to update status",
+      error: error.message,
+    });
+  }
+}
+
 // delete task by task id
 export async function DELETE(req: Request, {params}: {params: {id: string}}){
     try {
