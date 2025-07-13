@@ -35,12 +35,14 @@ type Task = {
 type TaskCardProps = {
   index: number;
   task: Task;
+  onTaskChange?: () => void;
 };
 
-export default function TaskCard({ task, index }: TaskCardProps) {
+export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
   console.log(task);
 
   const [isDialogEditOpen, setIsDialogEditOpen] = useState(false);
+  const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState(false);
 
   const [status, setStatus] = useState(task.status);
   const [checked, setChecked] = useState(task.status == "COMPLETE" ? true : false);
@@ -110,6 +112,22 @@ export default function TaskCard({ task, index }: TaskCardProps) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await axiosInstance.delete(`/tasks/${task.id}`);
+      if (response.data.success) {
+        toast.success("Task Deleted!");
+        setIsDialogDeleteOpen(false);
+        onTaskChange?.();
+      } else {
+        toast.error("Something went wrong!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <div
       key={index}
@@ -174,7 +192,7 @@ export default function TaskCard({ task, index }: TaskCardProps) {
           </Dialog>
 
           {/* Delete Dialog */}
-          <Dialog>
+          <Dialog open={isDialogDeleteOpen} onOpenChange={setIsDialogDeleteOpen}>
             <DialogTrigger asChild>
               <button className="text-red-500 hover:underline cursor-pointer">
                 Delete
@@ -191,7 +209,13 @@ export default function TaskCard({ task, index }: TaskCardProps) {
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button variant="destructive">Delete</Button>
+                <Button
+                  onClick={handleDelete}
+                  variant="destructive"
+                  className="cursor-pointer"
+                >
+                  Delete
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
