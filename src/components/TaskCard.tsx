@@ -1,3 +1,5 @@
+"use client"
+
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +62,7 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
         }else{
           setChecked(false);
         }
+        onTaskChange?.();
       } else {
         toast.error("Something went wrong!");
       }
@@ -80,6 +83,7 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
         } else {
           setChecked(false);
         }
+        onTaskChange?.();
       }
     } catch (error) {
       console.log("Fetch Status Error: ", error);
@@ -107,6 +111,7 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
       } else {
         setChecked(false);
       }
+      onTaskChange?.();
     } else {
       toast.error("Something went wrong!");
     }
@@ -128,6 +133,16 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
     }
   };
 
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <div
       key={index}
@@ -146,6 +161,37 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
         </Link>
       </div>
 
+      <div className="text-sm text-gray-700">
+        <table className="table-auto w-full text-left text-sm">
+          <tbody>
+            <tr>
+              <td className="py-1 pr-2 font-medium w-1/3">📅 Deadline</td>
+              <td>{formatDate(task.deadline)}</td>
+            </tr>
+            <tr>
+              <td className="py-1 pr-2 font-medium">⏰ Reminder</td>
+              <td>{formatDate(task.reminderAt)}</td>
+            </tr>
+            <tr>
+              <td className="py-1 pr-2 font-medium">✅ Status</td>
+              <td>
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold text-white ${
+                    task.status === "COMPLETE"
+                      ? "bg-green-500"
+                      : task.status === "IN_PROGRESS"
+                      ? "bg-yellow-500"
+                      : "bg-gray-400"
+                  }`}
+                >
+                  {task.status.replace("_", " ")}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div className="flex justify-between items-center">
         {/* Action buttons */}
         <div className="flex gap-4 text-sm">
@@ -161,7 +207,7 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Status?</DialogTitle>
+                <DialogTitle>Edit Status {task.title}?</DialogTitle>
               </DialogHeader>
               <form
                 onSubmit={handleSubmitEditStatus}
@@ -192,7 +238,10 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
           </Dialog>
 
           {/* Delete Dialog */}
-          <Dialog open={isDialogDeleteOpen} onOpenChange={setIsDialogDeleteOpen}>
+          <Dialog
+            open={isDialogDeleteOpen}
+            onOpenChange={setIsDialogDeleteOpen}
+          >
             <DialogTrigger asChild>
               <button className="text-red-500 hover:underline cursor-pointer">
                 Delete

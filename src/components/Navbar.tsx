@@ -4,8 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useUserStore } from "@/lib/store";
 
 export default function Navbar() {
+  const user = useUserStore((state) => state.user);
+
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -35,9 +38,13 @@ export default function Navbar() {
           <Link href="/task" className={linkClass("/task")}>
             Task
           </Link>
-          <Link href="/profile" className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden rounded-full border-2 border-green-500 cursor-pointer">
+          <Link
+            href="/profile"
+            className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden rounded-full border-2 border-green-500 cursor-pointer"
+          >
             <Image
-              src="/assets/images/avatar.png"
+              src={user?.profile_pic || "/assets/images/avatar.png"
+              }
               alt="Profile"
               width={48}
               height={48}
@@ -67,7 +74,10 @@ export default function Navbar() {
             <Link href="/task" className={linkClass("/task")}>
               Task
             </Link>
-            <Link href="/profile" className="w-12 h-12 overflow-hidden rounded-full border-2 border-green-500">
+            <Link
+              href="/profile"
+              className="w-12 h-12 overflow-hidden rounded-full border-2 border-green-500"
+            >
               <Image
                 src="/assets/images/avatar.png"
                 alt="Profile"

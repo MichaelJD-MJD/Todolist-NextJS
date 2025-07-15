@@ -1,8 +1,48 @@
+"use client"
+
 import Navbar from "@/components/Navbar";
+import { axiosInstance } from "@/lib/axios";
+import { useUserStore } from "@/lib/store";
 import { Camera } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Profile() {
+  const [selectedImg, setSelectedImg] = useState();
+  const user = useUserStore((state) => state.user);
+
+  const updateProfile = async (data: string) => {
+    try {
+      const response = await axiosInstance.put(`/users/${user?.id}`, {
+        profile_pic: data,
+      });
+      console.log(response);
+      if(response.data.success){
+        toast.success("Profile Updated successfully");
+      }
+    } catch (error) {
+      console.log("error in update profile:", error);
+      toast.error("Something went wrong!");
+    }
+  }
+
+  const handleImageUpload = async(e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setSelectedImg(base64Image);
+      await updateProfile(base64Image);
+    }
+
+  }
+
   return (
     <>
       <Navbar />
@@ -18,7 +58,11 @@ export default function Profile() {
             {/* Wrapper untuk image + icon */}
             <div className="w-24 h-24 rounded-full border-2 border-green-500 overflow-hidden relative">
               <Image
-                src="/assets/images/avatar.png"
+                src={
+                  selectedImg ||
+                  user?.profile_pic ||
+                  "/assets/images/avatar.png"
+                }
                 width={96}
                 height={96}
                 className="object-cover w-full h-full"
@@ -26,7 +70,16 @@ export default function Profile() {
               />
               {/* Icon camera di pojok kanan bawah */}
               <div className="absolute bottom-1 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer">
+                <label htmlFor="avatar-upload">
                 <Camera className="w-4 h-4 text-gray-700" />
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                </label>
               </div>
             </div>
 
@@ -42,7 +95,7 @@ export default function Profile() {
               </label>
               <input
                 type="text"
-                value="puput"
+                value={user?.nama}
                 readOnly
                 className="w-full px-4 py-2 rounded border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               />
@@ -53,7 +106,7 @@ export default function Profile() {
               </label>
               <input
                 type="email"
-                value="puput@gmail.com"
+                value={user?.email}
                 readOnly
                 className="w-full px-4 py-2 rounded border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               />
