@@ -35,12 +35,11 @@ type Task = {
 };
 
 type TaskCardProps = {
-  index: number;
   task: Task;
   onTaskChange?: () => void;
 };
 
-export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
+export default function TaskCard({ task, onTaskChange }: TaskCardProps) {
   console.log(task);
 
   const [isDialogEditOpen, setIsDialogEditOpen] = useState(false);
@@ -145,7 +144,7 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
 
   return (
     <div
-      key={index}
+      key={task.id}
       className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-between gap-4
       transition duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:scale-[1.02]
       w-full sm:w-[300px] md:w-[350px]"
@@ -272,10 +271,10 @@ export default function TaskCard({ task, index, onTaskChange }: TaskCardProps) {
 
         {/* Checkbox */}
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <label htmlFor={`task-${index}`}>Mark as completed</label>
+          <label htmlFor={`task-${task.id}`}>Mark as completed</label>
           <input
             type="checkbox"
-            id={`task-${index}`}
+            id={`task-${task.id}`}
             className="w-4 h-4 cursor-pointer"
             checked={checked}
             onChange={(e) => handleMarkComplete(e.target.checked)}

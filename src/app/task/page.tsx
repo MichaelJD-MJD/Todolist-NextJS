@@ -79,7 +79,7 @@ export default function Task() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
             {tasks.map((task, i) => (
               <TaskCard
-                key={i}
+                key={task.id}
                 index={i}
                 task={task}
                 onTaskChange={fetchTasks}
