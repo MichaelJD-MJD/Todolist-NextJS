@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { axiosInstance } from "@/lib/axios";
+import { logout } from "@/lib/logout";
 import { useUserStore } from "@/lib/store";
 import { Camera } from "lucide-react";
 import Image from "next/image";
@@ -43,6 +44,11 @@ export default function Profile() {
 
   }
 
+  const handleLogout = async() => {
+    logout();
+    toast.success("Logout success!");
+  }
+
   return (
     <>
       <Navbar />
@@ -71,14 +77,14 @@ export default function Profile() {
               {/* Icon camera di pojok kanan bawah */}
               <div className="absolute bottom-1 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer">
                 <label htmlFor="avatar-upload">
-                <Camera className="w-4 h-4 text-gray-700" />
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
+                  <Camera className="w-4 h-4 text-gray-700" />
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
                 </label>
               </div>
             </div>
@@ -125,6 +131,16 @@ export default function Profile() {
               <span>Account Status</span>
               <span className="text-green-600 font-semibold">Active</span>
             </div>
+          </div>
+
+          {/* Logout */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200 text-sm font-medium cursor-pointer"
+            >
+              Logout
+            </button>
           </div>
         </section>
       </main>
