@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 export default function Profile() {
   const [selectedImg, setSelectedImg] = useState();
   const user = useUserStore((state) => state.user);
+  const setUser = useUserStore.getState().setUser;
 
   const updateProfile = async (data: string) => {
     try {
@@ -20,6 +21,7 @@ export default function Profile() {
       });
       console.log(response);
       if(response.data.success){
+        setUser(response.data.data);
         toast.success("Profile Updated successfully");
       }
     } catch (error) {
@@ -64,6 +66,7 @@ export default function Profile() {
             {/* Wrapper untuk image + icon */}
             <div className="w-24 h-24 rounded-full border-2 border-green-500 overflow-hidden relative">
               <Image
+                key={selectedImg || user?.profile_pic} // key agar re-render setiap gambar berubah
                 src={
                   selectedImg ||
                   user?.profile_pic ||

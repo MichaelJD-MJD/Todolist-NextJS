@@ -43,8 +43,8 @@ export default function Navbar() {
             className="w-10 h-10 sm:w-12 sm:h-12 overflow-hidden rounded-full border-2 border-green-500 cursor-pointer"
           >
             <Image
-              src={user?.profile_pic || "/assets/images/avatar.png"
-              }
+              key={user?.profile_pic} // key agar re-render setiap gambar berubah
+              src={user?.profile_pic || "/assets/images/avatar.png"}
               alt="Profile"
               width={48}
               height={48}
@@ -79,7 +79,8 @@ export default function Navbar() {
               className="w-12 h-12 overflow-hidden rounded-full border-2 border-green-500"
             >
               <Image
-                src="/assets/images/avatar.png"
+                key={user?.profile_pic}
+                src={user?.profile_pic || "/assets/images/avatar.png"}
                 alt="Profile"
                 width={48}
                 height={48}

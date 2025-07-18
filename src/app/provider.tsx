@@ -9,6 +9,7 @@ export  function UserProvider({children}: {children: React.ReactNode}) {
 
     useEffect(()=> {
         const fetchUser = async() => {
+            console.log("FETCH USER TERPANGGIL");
             try {
                 const token = localStorage.getItem("token");
                 if(!token) return;

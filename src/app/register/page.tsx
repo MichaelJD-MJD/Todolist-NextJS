@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/lib/axios";
+import { useUserStore } from "@/lib/store";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +20,7 @@ export default function Register() {
     e.preventDefault();
 
     try {
+      const setUser = useUserStore.getState().setUser;
       const response = await axiosInstance.post("/users/auth/register", {
         nama,
         email,
@@ -28,6 +30,7 @@ export default function Register() {
       if (response?.data?.success) {
         toast.success("Register success");
         localStorage.setItem("token", response?.data?.token);
+        setUser(response.data.data);
         router.push("/dashboard");
       } else {
         toast.error(response?.data?.message);
