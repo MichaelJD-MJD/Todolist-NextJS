@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 Todolist App - Next.js Project
 
-## Getting Started
+Ini adalah proyek sederhana Todolist yang saya buat sebagai bagian dari proses pembelajaran menggunakan **Next.js**. Meskipun masih dalam tahap pengembangan awal, aplikasi ini telah memiliki fitur dasar yang berguna untuk manajemen tugas harian.
 
-First, run the development server:
+## ✨ Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Autentikasi User**  
+   Pengguna dapat melakukan **registrasi** dan **login** ke dalam aplikasi.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Manajemen Tugas (CRUD)**  
+   Pengguna dapat menambahkan, mengedit, menghapus, dan melihat daftar tugas mereka.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Filtering Tugas**  
+   Tugas dapat difilter berdasarkan **status** seperti *selesai* atau *belum selesai*.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Notifikasi Email Otomatis**  
+   Aplikasi ini mengirimkan notifikasi melalui email menggunakan **SendGrid**.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Teknologi & Tools
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js (App Router)** – Untuk mengelola komponen *server* dan *client*.
+- **Prisma** – ORM yang digunakan untuk mengelola dan berinteraksi dengan database.
+- **SendGrid** – Digunakan sebagai platform pengiriman email otomatis.
+- **Cloudinary** – Untuk mengunggah dan menyimpan foto profil pengguna.
+- **shadcn/ui** – Library UI modern berbasis Tailwind CSS.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🖼️ Tampilan Aplikasi
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Berikut adalah cuplikan tampilan antarmuka aplikasi:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> 🖼️ **Screenshot Halaman Utama**
+>
+> ![Screenshot Halaman Utama](./ss/dashboard-todolist.png)
+
+---
+
+## 📊 Skema Database (ERD)
+
+> 📌 **Gambar ERD (Entity Relationship Diagram)**
+>
+> ![ERD Skema](./ss/todolist-nextjs-erd.png)
+
+---
+
+## 🚀 Status Pengembangan
+
+Proyek ini masih dalam tahap pengembangan dan eksplorasi fitur-fitur lanjutan. Masukan dan saran sangat diterima untuk pengembangan lebih lanjut 🙌.
+
+---
+
+## 📬 Kontak
+
+Jika Anda memiliki pertanyaan, saran, atau ingin berdiskusi lebih lanjut, silakan hubungi saya melalui email atau GitHub.
+
+---
+
