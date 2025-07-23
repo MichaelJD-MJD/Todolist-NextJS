@@ -12,30 +12,38 @@ type Task = {
   userId: string;
 };
 
-export async function GET(req: Request, {params}: {params: {id: string}}) {
+export async function GET(req: Request, context: { params: { id: string } }) {
+  const { id } = context.params;
+
   try {
     const task = await prisma.task.findUnique({
-      where: {id: params.id}
+      where: { id },
     });
 
-    if(!task){
-      return NextResponse.json({
-        success: false,
-        message: "Task not found",
-      });
+    if (!task) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Task not found",
+        },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       success: true,
       data: task,
-    })
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({
-      success: false,
-      message: "task is not found!",
-      error: error.message,
     });
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "task is not found!",
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 
